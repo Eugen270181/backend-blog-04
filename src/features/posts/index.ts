@@ -9,9 +9,10 @@ import {adminMiddleware} from '../../common/middleware/admin-middleware'
 
 export const postsRouter = Router()
 
-postsRouter.post('/',  adminMiddleware, ...postValidators, createPostController)
+
 postsRouter.get('/', getPostsController)
 postsRouter.get('/:id', findPostValidator, findPostController)
+postsRouter.post('/',  adminMiddleware, ...postValidators, createPostController)
 postsRouter.delete('/:id',  adminMiddleware, findPostValidator, delPostController)
 postsRouter.put('/:id', adminMiddleware, findPostValidator, ...postValidators, putPostController)
 
