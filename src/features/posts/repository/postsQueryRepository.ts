@@ -11,8 +11,11 @@ export const postsQueryRepository = {
         const post = ( await postCollection.findOne({ _id: new ObjectId(id) }) )! // ! используем этот метод если проверили существование
         return this.map(post)
     },
-    async findPostsAndMap() {
-        const posts = await postCollection.find({}).toArray()
+    async findPostsAndMap(blogId:string) {
+        const isIdValid = ObjectId.isValid(blogId);
+        if (!(blogId&&isIdValid)) return null
+        const byId = blogId ? {blogId:new ObjectId(blogId)} : {}
+        const posts = await postCollection.find({byId} ).toArray()
         return posts.map(p => this.map(p))
     },
     map(post:WithId<PostDbModel>):PostOutputModel{

@@ -1,9 +1,7 @@
 import {PostDbModel} from '../../../common/types/db/post-db.model'
-import {postCollection} from "../../../common/module/db/dbMongo"
-import {ObjectId, WithId} from "mongodb"
+import {ObjectId} from "mongodb"
 import {blogsRepository} from '../../blogs/repositories/blogsRepository'
 import {CreatePostInputModel} from "../types/input/create-post-input.type";
-import {PostOutputModel} from "../types/output/post-output.type";
 import {UpdatePostInputModel} from "../types/input/update-post-input.type";
 import {postsRepository} from "../repository/postsRepository";
 
@@ -24,7 +22,11 @@ export const postsServices = {
         return postsRepository.deletePost(new ObjectId(id))
     },
     async updatePost(post: UpdatePostInputModel, id: string) {
-        return postsRepository.updatePost(post,id)
+        const {title, shortDescription, content, blogId} = post
+        const blog = await blogsRepository.findBlogById(post.blogId)
+        if(!blog){ return false}
+        const updateObject = {...{title, shortDescription, content, blogId},  blogName:blog.name}
+        return postsRepository.updatePost(updateObject,id)
     },
 
 }
