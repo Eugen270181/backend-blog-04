@@ -1,7 +1,6 @@
 import {body} from 'express-validator'
 import {inputCheckErrorsMiddleware} from '../../../common/middleware/inputCheckErrorsMiddleware'
-import {NextFunction, Request, Response} from 'express'
-import {blogsRepository} from '../repository/blogsRepository'
+
 
 // name: string // max 15
 // description: string // max 500
@@ -15,17 +14,6 @@ export const descriptionValidator = body('description').isString().withMessage('
 export const websiteUrlValidator = body('websiteUrl').isString().withMessage('not string')
     .trim().isURL().withMessage('not url')
     .isLength({min: 1, max: 100}).withMessage('more then 100 or 0')
-
-export const findBlogValidator = async (req: Request<{id: string}>, res: Response, next: NextFunction) => {
-    const foundBlog = await blogsRepository.findBlogById(req.params.id)
-    if (!foundBlog) {
-        res.status(404).send({})
-        return
-    }
-
-    next()
-}
-
 
 export const blogValidators = [
     nameValidator,
