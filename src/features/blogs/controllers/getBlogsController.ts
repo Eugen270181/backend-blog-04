@@ -1,9 +1,11 @@
 import {Request, Response} from 'express'
-import {BlogOutputModel} from "../types/output/blog-output.type";
 import {blogsQueryRepository} from "../repositories/blogsQueryRepository";
+import {inputQuerySanitizer} from "../../../common/module/inputQuerySanitizer";
+import {anyQueryType} from "../../../common/types/any-query-type";
 
-export const getBlogsController = async (req: Request, res: Response<BlogOutputModel[]>) => {
-    const foundBlogs = await blogsQueryRepository.findBlogsAndMap()
+export const getBlogsController = async (req: Request, res: Response<pagBlogOutputModel>) => {
+    const sanitizedQuery = inputQuerySanitizer(req.query)
+    const foundBlogs = await blogsQueryRepository.getBlogsAndMap(sanitizedQuery)
     res.status(200).send(foundBlogs)
 
 }
