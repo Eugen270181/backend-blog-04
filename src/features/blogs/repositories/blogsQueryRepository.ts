@@ -4,6 +4,7 @@ import {ObjectId, WithId} from "mongodb"
 import {BlogOutputModel} from "../types/output/blog-output.type";
 import {anyQueryType} from "../../../common/types/any-query-type";
 import {validQueryType} from "../../../common/types/valid-query-type";
+import {pagBlogOutputModel} from "../types/output/pag-blog-output.type";
 
 
 
@@ -17,7 +18,7 @@ export const blogsQueryRepository = {
         const blog = await this.findBlogById(id)
         return blog?this.map(blog):null
     },
-    async getBlogsAndMap(query:validQueryType) {
+    async getBlogsAndMap(query:validQueryType):Promise<pagBlogOutputModel> {
         const search = query.searchNameTerm ? {title:{$regex:query.searchNameTerm,$options:'i'}}:{}
         const filter = {
             ...search
@@ -29,20 +30,18 @@ export const blogsQueryRepository = {
                 .skip((query.pageNumber-1)*query.pageSize)
                 .limit(query.pageSize)
                 .toArray()
-            const totalCount = blogCollection.countDocuments(filter)
+            const totalCount = await blogCollection.countDocuments(filter)
             return {
-                pageCount: Math.Ceil(totalCount/query.pageSize)
-                page: query.pageNumber
-                pageSize:query.pageSize
+                pagesCount: Math.ceil(totalCount/query.pageSize),
+                page: query.pageNumber,
+                pageSize:query.pageSize,
+                totalCount,
+                items:blogs.map(this.map)
             }
-
-            blogs.map(b => this.map(b))
-
         }
         catch(e){
             console.log(e)
-            return []
-
+            throw new Error(JSON.stringify(e))
         }
 
     },
