@@ -1,4 +1,4 @@
-import {blogCollection, postCollection} from "../../../common/module/db/dbMongo"
+import {postCollection} from "../../../common/module/db/dbMongo"
 import {ObjectId, WithId} from "mongodb"
 import {PostOutputModel} from "../types/output/post-output.type";
 import {PostDbModel} from "../../../common/types/db/post-db.model";
@@ -17,16 +17,11 @@ export const postsQueryRepository = {
         return post?this.map(post):null
     },
     async getPostsAndMap(query:validQueryType, blogId?:string):Promise<pagPostOutputModel> { // используем этот метод если проверили валидность и существование в бд значения blogid
-        let byId = {}
+        let filter = {}
         if (blogId) {
-            byId =  {"blogId": new ObjectId(blogId)}
+            filter =  {blogId}
         }
-
         //const search = query.searchNameTerm ? {title:{$regex:query.searchNameTerm,$options:'i'}}:{}
-        const filter = {
-            ...byId,
-        //    ...search
-        }
         try {
             const posts = await postCollection
                 .find(filter)

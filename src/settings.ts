@@ -14,5 +14,5 @@ export const SETTINGS = {
     BLOG_COLLECTION_NAME:process.env.BLOG_COLLECTION_NAME || 'Blogs',
     POST_COLLECTION_NAME:process.env.POST_COLLECTION_NAME || 'Posts',
 }
-console.log(process.env.MONGO_URL)
+//console.log(process.env.MONGO_URL)
 // console.log(process.env.ADMIN)

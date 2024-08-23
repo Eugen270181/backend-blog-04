@@ -2,7 +2,6 @@ import {BlogDbModel} from '../../../common/types/db/blog-db.model'
 import {blogCollection} from "../../../common/module/db/dbMongo"
 import {ObjectId, WithId} from "mongodb"
 import {BlogOutputModel} from "../types/output/blog-output.type";
-import {anyQueryType} from "../../../common/types/any-query-type";
 import {validQueryType} from "../../../common/types/valid-query-type";
 import {pagBlogOutputModel} from "../types/output/pag-blog-output.type";
 
@@ -19,18 +18,15 @@ export const blogsQueryRepository = {
         return blog?this.map(blog):null
     },
     async getBlogsAndMap(query:validQueryType):Promise<pagBlogOutputModel> {
-        const search = query.searchNameTerm ? {title:{$regex:query.searchNameTerm,$options:'i'}}:{}
-        const filter = {
-            ...search
-        }
+        const search = query.searchNameTerm ? {name:{$regex:query.searchNameTerm,$options:'i'}}:{}
         try {
             const blogs = await blogCollection
-                .find(filter)
+                .find(search)
                 .sort(query.sortBy,query.sortDirection)
                 .skip((query.pageNumber-1)*query.pageSize)
                 .limit(query.pageSize)
                 .toArray()
-            const totalCount = await blogCollection.countDocuments(filter)
+            const totalCount = await blogCollection.countDocuments(search)
             return {
                 pagesCount: Math.ceil(totalCount/query.pageSize),
                 page: query.pageNumber,
